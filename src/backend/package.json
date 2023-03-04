@@ -1,0 +1,24 @@
+{
+  "name": "DrawAI",
+  "version": "1.0.0",
+  "description": "Backend for DrawAI",
+  "author": "DrawAI",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "watch": "nodemon --watch src --exec \"npm start\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.21",
+    "socket.io": "^4.6.1",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.14.6",
+    "typescript": "^4.9.5"
+  }
+}
