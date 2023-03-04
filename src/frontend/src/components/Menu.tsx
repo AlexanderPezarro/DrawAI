@@ -1,43 +1,45 @@
 import React from "react";
-import { useAppSelector, useAppDispatch } from "../hooks";
+import { useAppDispatch } from "../hooks";
 import { setMode } from "../slices/modeSlice";
 import Button from "react-bootstrap/Button";
+import { Link } from "react-router-dom";
 
 export const Menu = () => {
     const dispatch = useAppDispatch();
     return (
-        <div>
-            <div className="col-4">
-                {useAppSelector((state) => state.mode.value)}
-            </div>
-            <div className="col-4">
-                <Button
-                    as="a"
-                    variant="primary"
-                    onClick={() => {
-                        dispatch(setMode("practice"));
-                    }}
-                >
-                    Practice
-                </Button>
-                <Button
-                    as="a"
-                    variant="primary"
-                    onClick={() => {
-                        dispatch(setMode("create-room"));
-                    }}
-                >
-                    Create Room
-                </Button>
-                <Button
-                    as="a"
-                    variant="primary"
-                    onClick={() => {
-                        dispatch(setMode("join-room"));
-                    }}
-                >
-                    Join Room
-                </Button>
+        <div className="row">
+            <div className="col-4"></div>
+            <div className="col-4 col">
+                <Link to="/practice">
+                    <Button
+                        onClick={() => {
+                            dispatch(setMode("practice"));
+                        }}
+                        className="button"
+                    >
+                        Practice
+                    </Button>
+                </Link>
+                <Link to="/create-room">
+                    <Button
+                        onClick={() => {
+                            dispatch(setMode("create-room"));
+                        }}
+                        className="button"
+                    >
+                        Create Room
+                    </Button>
+                </Link>
+                <Link to="/join-room">
+                    <Button
+                        onClick={() => {
+                            dispatch(setMode("join-room"));
+                        }}
+                        className="button"
+                    >
+                        Join Room
+                    </Button>
+                </Link>
             </div>
             <div className="col-4"></div>
         </div>

@@ -1,18 +1,22 @@
 import React from "react";
 import "./App.css";
 import { Menu } from "./components/Menu";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Practice from "./components/Practice";
 
 function App() {
-    const mode = "home";
     return (
-        <div className="App">
-            <header className="App-header">
-                <span className="row">
-                    <div>{mode}</div>
-                    {mode === "home" && <Menu />}
-                </span>
-            </header>
-        </div>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/">
+                    <Route index element={<Menu />} />
+                    <Route path="practice" element={<Practice />} />
+                    <Route path="create-room" element={<Practice />} />
+                    <Route path="join-room" element={<Practice />} />
+                    <Route path="*" element={<Menu />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
     );
 }
 
