@@ -47,14 +47,28 @@ app.get('/createRoom', (req: Request, res: Response) => {
     });
 
 io.on('connection', (socket) => {
-    console.log(`${socket.id} user just connected!`);
+    console.log(`Id-${socket.id} connected!`);
 
-    socket.on('join', (data: {username: String, roomCode: String}) => {
-        io.emit('messageResponse', data);
+    socket.on('join', (data: {username: string, roomCode: string}) => {
+        if (activeRooms.has(data.roomCode)) {
+            socket.join(data.roomCode);
+            socket.to(data.roomCode).emit("joined");
+        } else {
+            console.log("Invalid room code");
+        }
+    });
+
+    socket.on('leave', (data: {username: string, roomCode: string}) => {
+        if (activeRooms.has(data.roomCode)) {
+            socket.leave(data.roomCode);
+            socket.to(data.roomCode).emit("left");
+        } else {
+            console.log("Invalid room code");
+        }
     });
 
     socket.on('disconnect', () => {
-      console.log('A user disconnected');
+      console.log(`Id-${socket.id} disconnected!`);
     });
 });
 
