@@ -6,7 +6,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "watch": "nodemon --watch src --exec \"npm start\""
+    "watch": "nodemon --watch src --exec \"npm start\" --ext ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
