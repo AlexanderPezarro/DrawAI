@@ -154,4 +154,6 @@ psd
 thumb
 sketch
 
+src/backend/images/*
+
 # End of https://www.toptal.com/developers/gitignore/api/react,node
