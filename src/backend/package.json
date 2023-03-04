@@ -3,10 +3,10 @@
     "version": "1.0.0",
     "description": "Backend for DrawAI",
     "author": "DrawAI",
-    "main": "index.tsx",
+    "main": "index.ts",
     "scripts": {
-        "start": "ts-node src/index.tsx",
-        "watch": "nodemon --watch src --exec \"npm start\""
+        "start": "ts-node src/index.ts",
+        "watch": "nodemon --watch src --exec \"npm start\" --ext ts"
     },
     "dependencies": {
         "cors": "^2.8.5",
