@@ -48,6 +48,11 @@ app.get('/createRoom', (req: Request, res: Response) => {
 
 io.on('connection', (socket) => {
     console.log(`${socket.id} user just connected!`);
+
+    socket.on('join', (data: {username: String, roomCode: String}) => {
+        io.emit('messageResponse', data);
+    });
+
     socket.on('disconnect', () => {
       console.log('A user disconnected');
     });
