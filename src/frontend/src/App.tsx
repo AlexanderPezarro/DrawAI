@@ -4,7 +4,8 @@ import { Menu } from "./components/Menu";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Practice from "./components/Practice";
 
-import { io, Socket } from "socket.io-client";
+import {io, Socket} from "socket.io-client";
+import Room from "./components/room/Room";
 
 function App() {
     const mode = "home";
@@ -15,8 +16,8 @@ function App() {
                 <Route path="/">
                     <Route index element={<Menu />} />
                     <Route path="practice" element={<Practice />} />
-                    <Route path="create-room" element={<Practice />} />
-                    <Route path="join-room" element={<Practice />} />
+                    <Route path="create-room" element={<Room socket={socket}/>} />
+                    <Route path="join-room" element={<Room socket={socket}/>} />
                     <Route path="*" element={<Menu />} />
                 </Route>
             </Routes>

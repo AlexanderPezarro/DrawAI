@@ -18,7 +18,7 @@ function makeRoomID() {
         // abcdefghijklmnopqrstuvwxyz
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         const charactersLength = characters.length;
-        for (let index = 0; index < 5; index++) {
+        for (let index = 0; index < 6; index++) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
 
@@ -43,7 +43,9 @@ app.get('/', (req: Request, res: Response) => {
   });
 
 app.get('/createRoom', (req: Request, res: Response) => {
-    res.send(makeRoomID());
+        const roomCode = makeRoomID();
+        res.send(roomCode);
+        console.log(`Sent room code: ${roomCode}`);
     });
 
 io.on('connection', (socket) => {
@@ -64,6 +66,15 @@ io.on('connection', (socket) => {
             socket.to(data.roomCode).emit("left");
         } else {
             console.log("Invalid room code");
+        }
+    });
+
+    socket.on('message', (data: {text: string, username: string, roomCode: string, id: string, socketID: string}) => {
+        console.log(`Got message: ${JSON.stringify(data)}`);
+        if (activeRooms.has(data.roomCode)) {
+            io.to(data.roomCode).emit("message", {text: data.text, username: data.username, id: data.id});
+        } else {
+            console.log(`Invalid room code: ${JSON.stringify(data)}`);
         }
     });
 
