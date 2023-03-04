@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { Server } from "socket.io";
-import fs from "fs";
+const ImageDataURI = require("image-data-uri");
 
 dotenv.config();
 
@@ -33,7 +33,10 @@ function makeRoomID() {
 }
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(
+    express.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 })
+);
 
 const io = new Server(server, {
     cors: {
@@ -50,14 +53,8 @@ app.get("/createRoom", (req: Request, res: Response) => {
 });
 
 app.post("/predict", (req: Request, res: Response) => {
-    fs.writeFile(
-        "./images/array.json",
-        JSON.stringify(req.body),
-        "utf8",
-        (err) => {
-            if (err) console.log(err);
-        }
-    );
+    console.log(req.body);
+    ImageDataURI.outputFile(req.body.data, "./images/image.png");
 
     res.json({
         label: "bat",

@@ -6,11 +6,11 @@ const BACKEND_URL =
         ? ""
         : process.env.REACT_APP_BACKEND_URL;
 
-async function predictImage(grid: number[][]) {
+async function predictImage(data: string) {
     var result;
     await axios
         .post(BACKEND_URL + "/predict", {
-            grid: grid,
+            data: data,
         })
         .then((res) => {
             result = res.data;
