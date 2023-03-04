@@ -4,7 +4,11 @@ import { Menu } from "./components/Menu";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Practice from "./components/Practice";
 
+import { io, Socket } from "socket.io-client";
+
 function App() {
+    const mode = "home";
+    const socket = io("http://localhost:22435");
     return (
         <BrowserRouter>
             <Routes>
