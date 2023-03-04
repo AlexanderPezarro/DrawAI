@@ -1,9 +1,8 @@
 import argparse
-
 import numpy as np
-
 from keras import models
 import imageio.v3 as iio
+from skimage.transform import resize
 
 from utils.utils import read_config
 
@@ -24,9 +23,9 @@ if __name__ == '__main__':
     config = read_config()
     classes = config["classes"].split(",")
 
-    img = np.array([iio.imread(flags.img)[:, :, 0]])
+    img = iio.imread(flags.img)[:, :, 0]
+    img = resize(img, (28, 28))
+    img = np.array([img])
 
     model = models.load_model("models/model_1")
-    print(model.predict(img))
     print(classes[np.argmax(model.predict(img))])
-    pass
