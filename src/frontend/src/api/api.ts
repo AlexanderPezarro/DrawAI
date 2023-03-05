@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 // require("dotenv").config();
 
 const BACKEND_URL =
@@ -21,9 +21,12 @@ export async function predictImage(data: string) {
     return result;
 }
 
-const apiurl = "http://localhost:22435/";
+export function getRoomCode(): Promise<AxiosResponse<string, any>> {
+    console.log("Getting room code");
+    return axios.get<string>(BACKEND_URL + "/createRoom");
+}
 
-export const getRoomCode = () => {
-    console.log("Create room api call");
-    return axios.get<string>(apiurl + "createRoom");
-};
+export function postRoomCode(roomCode: string): Promise<AxiosResponse<string, any>> {
+    console.log(`Checking room code: ${roomCode}`);
+    return axios.post<string>(BACKEND_URL + "/checkRoom", {roomCode: roomCode});
+}

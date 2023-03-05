@@ -62,13 +62,20 @@ app.post("/predict", (req: Request, res: Response) => {
     });
 });
 
+app.post("/checkRoom", (req: Request, res: Response) => {
+    console.log(`Checking room ${JSON.stringify(req.body.roomCode)}`);
+    if (activeRooms.has(req.body.roomCode)) res.send(req.body.roomCode).end();
+    res.status(401).send();
+});
+
 io.on("connection", (socket) => {
     console.log(`Id-${socket.id} connected!`);
 
     socket.on("join", (data: { username: string; roomCode: string }) => {
         if (activeRooms.has(data.roomCode)) {
+            console.log(`${data.username} has join room ${data.roomCode}`);
             socket.join(data.roomCode);
-            socket.to(data.roomCode).emit("joined");
+            socket.to(data.roomCode).emit("joined", data.username);
         } else {
             console.log("Invalid room code");
         }
@@ -86,7 +93,7 @@ io.on("connection", (socket) => {
     socket.on('message', (data: {text: string, username: string, roomCode: string, id: string, socketID: string}) => {
         console.log(`Got message: ${JSON.stringify(data)}`);
         if (activeRooms.has(data.roomCode)) {
-            io.to(data.roomCode).emit("message", {text: data.text, username: data.username, id: data.id});
+            socket.to(data.roomCode).emit("message", {text: data.text, username: data.username, id: data.id});
         } else {
             console.log(`Invalid room code: ${JSON.stringify(data)}`);
         }

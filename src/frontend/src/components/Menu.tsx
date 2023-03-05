@@ -35,13 +35,8 @@ export const Menu = () => {
 
                 <input className="mt-3" type="text" minLength={6} maxLength={6} pattern="^[A-Z]{6}$" value={roomCode} onChange={(e) => setRoomCode(e.target.value)}/>
 
-                <Link to="/join-room" className="mx-auto">
-                    <Button
-                        onClick={() => {
-                            dispatch(setMode("join-room"));
-                        }}
-                        className="button"
-                    >
+                <Link to= {"/join-room/" + roomCode} className="mx-auto">
+                    <Button className="button">
                         Join Room
                     </Button>
                 </Link>

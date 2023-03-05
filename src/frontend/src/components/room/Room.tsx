@@ -25,17 +25,11 @@ const Room: React.FC<{ socket: Socket; roomCode?: string }> = (props) => {
     const canvasRef = useRef<CanvasHandle>(null);
 
     useEffect(() => {
-        if (roomCode === undefined) {
-            dispatch(createRoomCode(props.socket));
-        }
-    }, [roomCode]);
-
-    useEffect(() => {
         let username = localStorage.getItem("userName");
         while (username === "" || username === null) {
             console.log(username);
             const res = prompt("Please enter a username");
-            if (res == null || res == "") {
+            if (res === null || res === "") {
                 localStorage.setItem("userName", "");
             } else {
                 localStorage.setItem("userName", res);
