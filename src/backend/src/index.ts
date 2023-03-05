@@ -120,7 +120,7 @@ io.on("connection", (socket) => {
         if (activeRooms.has(data.roomCode)) {
             console.log(`${data.username} has join room ${data.roomCode}`);
             socket.join(data.roomCode);
-            socket.to(data.roomCode).emit("joined", data.username);
+            io.to(data.roomCode).emit("joined", data.username);
         } else {
             console.log("Invalid room code");
         }
@@ -135,49 +135,32 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on(
-        "message",
-        (data: {
-            text: string;
-            username: string;
-            roomCode: string;
-            id: string;
-            socketID: string;
-        }) => {
-            console.log(`Got message: ${JSON.stringify(data)}`);
-            if (activeRooms.has(data.roomCode)) {
-                socket.to(data.roomCode).emit("message", {
-                    text: data.text,
-                    username: data.username,
-                    id: data.id,
-                });
-            } else {
-                console.log(`Invalid room code: ${JSON.stringify(data)}`);
-            }
+    socket.on('message', (data: {text: string, username: string, roomCode: string, id: string, socketID: string}) => {
+        console.log(`Got message: ${JSON.stringify(data)}`);
+        if (activeRooms.has(data.roomCode)) {
+            io.to(data.roomCode).emit("message", {text: data.text, username: data.username, id: data.id});
+        } else {
+            console.log(`Invalid room code: ${JSON.stringify(data)}`);
         }
-    );
+    });
 
-    socket.on(
-        "message",
-        (data: {
-            text: string;
-            username: string;
-            roomCode: string;
-            id: string;
-            socketID: string;
-        }) => {
-            console.log(`Got message: ${JSON.stringify(data)}`);
-            if (activeRooms.has(data.roomCode)) {
-                io.to(data.roomCode).emit("message", {
-                    text: data.text,
-                    username: data.username,
-                    id: data.id,
-                });
-            } else {
-                console.log(`Invalid room code: ${JSON.stringify(data)}`);
-            }
+    socket.on('start', (roomCode: string) => {
+        console.log(`Room starting: ${roomCode}`);
+        if (activeRooms.has(roomCode)) {
+            io.to(roomCode).emit("started", generateRandomSequence(5));
+        } else {
+            console.log(`Invalid room code when starting: ${JSON.stringify(roomCode)}`);
         }
-    );
+    });
+
+    socket.on('game over', (data: {roomCode: string, username: string}) => {
+        console.log(`Game over: ${data.roomCode}`);
+        if (activeRooms.has(data.roomCode)) {
+            io.to(data.roomCode).emit("over", data.username);
+        } else {
+            console.log(`Invalid room code when ending: ${JSON.stringify(data)}`);
+        }
+    });
 
     socket.on("disconnect", () => {
         console.log(`Id-${socket.id} disconnected!`);

@@ -52,8 +52,9 @@ const modeSlice = createSlice({
         setUsername: (state, action: PayloadAction<string>) => {
             state.room = action.payload;
         },
-        setStarted: (state) => {
+        setStarted: (state, action: PayloadAction<{roomCode:string, socket:Socket}>) => {
           state.gameStarted = true;
+          action.payload.socket.emit("start", action.payload.roomCode);
       },
     },
     extraReducers: (builder) => {
