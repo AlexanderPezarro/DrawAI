@@ -12,7 +12,7 @@ import Canvas, { CanvasHandle } from "../Canvas";
 import Chat from "./Chat";
 import Players from "./Players";
 
-const Room: React.FC<{ socket: Socket, isHost: boolean}> = (props) => {
+const Room: React.FC<{ socket: Socket; isHost: boolean }> = (props) => {
     const [isStarted, setIsStarted] = useState(false);
     const [words, setWords] = useState<string[]>([]);
     const [index, setIndex] = useState(0);
@@ -39,9 +39,12 @@ const Room: React.FC<{ socket: Socket, isHost: boolean}> = (props) => {
 
     useEffect(() => {
         if (index >= 5) {
-            props.socket.emit("game over", {roomCode: room, username: username});
+            props.socket.emit("game over", {
+                roomCode: room,
+                username: username,
+            });
         }
-    }, [index])
+    }, [index]);
 
     const handleSubmit = async function () {
         const data = await getCanvasImage();
@@ -49,97 +52,129 @@ const Room: React.FC<{ socket: Socket, isHost: boolean}> = (props) => {
         if (true) {
             // setMatch(result.label === words[index]);
             setMatch(true);
-            setIndex(index + 1); 
+            setIndex(index + 1);
         }
-        canvasRef.current?.clear(); 
+        canvasRef.current?.clear();
+    };
+
+    const handleClear = function () {
+        canvasRef.current?.clear();
     };
 
     useEffect(() => {
-        props.socket.on('started', (prompts: string[]) => {
+        props.socket.on("started", (prompts: string[]) => {
             setIsStarted(true);
             setWords([...words, ...prompts]);
             console.log(`Got prompts ${JSON.stringify(prompts)}`);
         });
-        }, [props, words, isStarted]);
+    }, [props, words, isStarted]);
 
     useEffect(() => {
-        props.socket.on('over', (winner: string) => {
+        props.socket.on("over", (winner: string) => {
             setGameOver(true);
             setWon(username === winner);
             console.log(`Game over, ${username === winner ? "won" : "lost"}`);
         });
-        }, [props, gameOver, won]);
+    }, [props, gameOver, won]);
 
     const handleStart = () => {
-        dispatch(setStarted({roomCode: room, socket: props.socket}));
-    }
+        dispatch(setStarted({ roomCode: room, socket: props.socket }));
+    };
 
     return (
-        <div className="row">
-            <div className="col-2">
-                <Players socket={props.socket} />
+        <div className="row m-5">
+            <div
+                className="col-2 card border"
+                style={{ backgroundColor: "#f8b195", maxHeight: "60em" }}
+            >
+                <div className="mt-auto">
+                    <Players socket={props.socket} />
+                </div>
             </div>
-                <div className="col-8">
-                    {isStarted && !gameOver &&
-                        <div className="container">
-                            <div className="row">
-                                <h3 className="center">Target: {words[index]} No. Completed: {index}</h3>
-                            </div>
-                            <div className="center row">
-                                <Canvas ref={canvasRef} />
-                            </div>
-                            <div className="row">
-                                <Button className="button" onClick={handleSubmit}>
+            <div className="col-8">
+                {isStarted && !gameOver && (
+                    <div className="container">
+                        <div className="row">
+                            <h3 className="center" style={{ color: "white" }}>
+                                Target: '{words[index]}'. Completed: {index}{" "}
+                                prompts
+                            </h3>
+                        </div>
+                        <div className="center row">
+                            <Canvas ref={canvasRef} />
+                        </div>
+                        <div className="row m-3">
+                            <div className="col-3 m-3"></div>
+                            <div className="col-3 mt-1 mb-1 center">
+                                <Button
+                                    className="button"
+                                    onClick={handleSubmit}
+                                >
                                     Submit
                                 </Button>
-                                <div>Match: {match.toString()}</div>
                             </div>
-                        </div>
-                    }
-                    {!isStarted && props.isHost && !gameOver &&
-                        <div className="container">
-                            <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-                                <Button className="button" onClick={handleStart}>
-                                    Start Game
+                            <div className="col-3 mt-1 mb-1 center">
+                                <Button
+                                    className="button"
+                                    onClick={handleClear}
+                                >
+                                    Clear
                                 </Button>
-                                <h2>Room code: {room}</h2>
                             </div>
+
+                            <div className="col-3"></div>
                         </div>
-                    }
-                    {!isStarted && !props.isHost && !gameOver &&
-                        <div className="container">
-                            <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-                                <h2>Waiting for host to start</h2>
-                            </div>
+                    </div>
+                )}
+                {!isStarted && props.isHost && !gameOver && (
+                    <div className="container">
+                        <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+                            <Button className="button" onClick={handleStart}>
+                                Start Game
+                            </Button>
+                            <h2 style={{ color: "white" }}>
+                                Room code: {room}
+                            </h2>
                         </div>
-                    }
-                    {gameOver && won &&
-                        <div className="container">
-                            <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-                                <h2>You won!!!</h2>
-                                <Link to="/">
-                                    <Button className="button">
-                                        Main Menu
-                                    </Button>
-                                </Link>
-                            </div>
+                    </div>
+                )}
+                {!isStarted && !props.isHost && !gameOver && (
+                    <div className="container">
+                        <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+                            <h2>Waiting for host to start</h2>
                         </div>
-                    }
-                    {gameOver && !won &&
-                        <div className="container">
-                            <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-                                <h2>You lost. Completed {index} prompts out of 5.</h2>
-                                <Link to="/">
-                                    <Button className="button">
-                                        Main Menu
-                                    </Button>
-                                </Link>
-                            </div>
+                    </div>
+                )}
+                {gameOver && won && (
+                    <div className="container">
+                        <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+                            <h2>You won!!!</h2>
+                            <Link to="/">
+                                <Button className="button">Main Menu</Button>
+                            </Link>
                         </div>
-                    }
+                    </div>
+                )}
+                {gameOver && !won && (
+                    <div className="container">
+                        <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+                            <h2>
+                                You lost. Completed {index} prompts out of 5.
+                            </h2>
+                            <Link to="/">
+                                <Button className="button">Main Menu</Button>
+                            </Link>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <div
+                className="col-2 card border"
+                style={{ backgroundColor: "#f8b195", maxHeight: "60em" }}
+            >
+                <div className="mt-auto">
+                    <Chat socket={props.socket} />
                 </div>
-            <div className="col-2">
-                <Chat socket={props.socket} />
             </div>
         </div>
     );
