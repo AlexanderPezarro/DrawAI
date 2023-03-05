@@ -1,18 +1,32 @@
-import React, { Component, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useRef } from "react";
+import { useState } from "react";
+import { Button } from "react-bootstrap";
 import { Socket } from "socket.io-client";
+import { predictImage } from "../../api/api";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { checkRoomCode, createRoomCode, setUsername } from "../../slices/modeSlice";
-import Canvas from "../Canvas";
+import { createRoomCode } from "../../slices/modeSlice";
+import { getCanvasImage } from "../../utils/utils";
+import Canvas, { CanvasHandle } from "../Canvas";
 import Chat from "./Chat";
 import Players from "./Players";
 
-const Room: React.FC<{socket: Socket}> = (props) => {
+const words = ["banana", "bat", "bed"];
+
+const randomWord = () => {
+    return words[Math.floor(Math.random() * words.length)];
+};
+
+const Room: React.FC<{ socket: Socket; roomCode?: string }> = (props) => {
     const dispatch = useAppDispatch();
-    let username = localStorage.getItem('userName');
+    const roomCode = useAppSelector((state) => state.mode.room);
+    const [word, setWord] = useState(randomWord());
+    const [match, setMatch] = useState(false);
+    const canvasRef = useRef<CanvasHandle>(null);
 
     useEffect(() => {
-        while (username === "" ||  username === null) {
+        let username = localStorage.getItem("userName");
+        while (username === "" || username === null) {
             console.log(username);
             const res = prompt("Please enter a username");
             if (res === null || res === "") {
@@ -20,27 +34,45 @@ const Room: React.FC<{socket: Socket}> = (props) => {
             } else {
                 localStorage.setItem("userName", res);
             }
-            username = localStorage.getItem('userName');
+            username = localStorage.getItem("userName");
         }
     }, []);
-    
-    return(
-    <div className="d-flex min-vh-100">
-        {/* Left: 0 */}
-        <div className="mr-auto">
-            <Players socket={props.socket}/>
-        </div>
 
-        {/* margin: auto */}
-        <div className="">
-            <Canvas />
-        </div>
+    const handleSubmit = async function () {
+        const data = await getCanvasImage();
+        const result = await predictImage(data);
+        setMatch(result.label === word);
+        console.log(match);
+        canvasRef.current?.clear();
+        setWord(randomWord());
+    };
 
-        {/* Right: 0 */}
-        <div className="ml-auto">
-            <Chat socket={props.socket}/>
+    return (
+        <div className="row">
+            <div className="col-2">
+                <Players socket={props.socket} />
+            </div>
+            <div className="col-8">
+                <div className="container">
+                    <div className="row">
+                        <h3 className="center">Target: {word}</h3>
+                    </div>
+                    <div className="center row">
+                        <Canvas ref={canvasRef} />
+                    </div>
+                    <div className="row">
+                        <Button className="button" onClick={handleSubmit}>
+                            Submit
+                        </Button>
+                        <div>Match: {match.toString()}</div>
+                    </div>
+                </div>
+            </div>
+            <div className="col-2">
+                <Chat socket={props.socket} />
+            </div>
         </div>
-    </div>);
-}
+    );
+};
 
 export default Room;
