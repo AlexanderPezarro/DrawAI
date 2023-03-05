@@ -10,8 +10,6 @@ import Players from "./Players";
 const Room: React.FC<{socket: Socket}> = (props) => {
     const dispatch = useAppDispatch();
     let username = localStorage.getItem('userName');
-    // const {roomCode} = useParams();
-    // const room = useAppSelector((state) => state.mode.room);
 
     useEffect(() => {
         while (username === "" ||  username === null) {
