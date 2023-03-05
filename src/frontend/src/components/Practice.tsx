@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import Button from "react-bootstrap/Button";
 import CanvasDraw from "react-canvas-draw";
-import predictImage from "../api/api";
+import { predictImage } from "../api/api";
 import html2canvas from "html2canvas";
 
 const Practice = () => {
