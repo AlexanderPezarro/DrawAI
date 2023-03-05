@@ -49,9 +49,8 @@ const Room: React.FC<{ socket: Socket; isHost: boolean }> = (props) => {
     const handleSubmit = async function () {
         const data = await getCanvasImage();
         const result = await predictImage(data);
-        if (true) {
-            // setMatch(result.label === words[index]);
-            setMatch(true);
+        if (result.label === words[index]) {
+            setMatch(result.label === words[index]);
             setIndex(index + 1);
         }
         canvasRef.current?.clear();
