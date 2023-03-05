@@ -1,4 +1,3 @@
-import userEvent from "@testing-library/user-event";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Socket } from "socket.io-client";

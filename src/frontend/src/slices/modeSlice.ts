@@ -1,9 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import { Socket } from "socket.io-client";
-// import {io, Socket} from "socket.io-client"
 import { getRoomCode, postRoomCode } from "../api/api";
-// import { ClientToServerEvents, ServerToClientEvents } from "../types/types";
 
 export const createRoomCode = createAsyncThunk<string, {username:string|null, socket:Socket}>(
     "createRoom/",
@@ -32,33 +30,31 @@ export const createRoomCode = createAsyncThunk<string, {username:string|null, so
     }
   );
 
-type Modes = "home" | "practice" | "create-room" | "join-room";
-
 export interface Mode {
-    value: Modes;
     room: string;
     username: string;
+    gameStarted: boolean;
 }
 
 const initialState: Mode = {
-    value: "home",
     room: "",
     username: "",
+    gameStarted: false,
 }
 
 const modeSlice = createSlice({
     name: "mode",
     initialState,
     reducers: {
-        setMode: (state, action: PayloadAction<Modes>) => {
-            state.value = action.payload;
-        },
         setRoom: (state, action: PayloadAction<string>) => {
             state.room = action.payload;
         },
         setUsername: (state, action: PayloadAction<string>) => {
             state.room = action.payload;
         },
+        setStarted: (state) => {
+          state.gameStarted = true;
+      },
     },
     extraReducers: (builder) => {
         builder.addCase(createRoomCode.fulfilled, (state, { payload }) => {
@@ -78,5 +74,5 @@ const modeSlice = createSlice({
     },
 });
 
-export const { setMode, setRoom, setUsername } = modeSlice.actions;
+export const { setRoom, setUsername, setStarted } = modeSlice.actions;
 export default modeSlice.reducer;

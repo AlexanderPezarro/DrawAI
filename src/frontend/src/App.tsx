@@ -15,8 +15,8 @@ function App() {
                 <Route path="/">
                     <Route index element={<Menu />} />
                     <Route path="practice" element={<Practice />} />
-                    <Route path="create-room" element={<Room socket={socket}/>} />
-                    <Route path="join-room/:roomCode" element={<Room socket={socket}/>} />
+                    <Route path="create-room" element={<Room socket={socket} isHost={true}/>} />
+                    <Route path="join-room/:roomCode" element={<Room socket={socket} isHost={false}/>} />
                     <Route path="*" element={<Menu />} />
                 </Route>
             </Routes>
