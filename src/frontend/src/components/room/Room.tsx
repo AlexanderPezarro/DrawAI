@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useRef } from "react";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Socket } from "socket.io-client";
 import { predictImage } from "../../api/api";
 import { useAppDispatch, useAppSelector } from "../../hooks";
@@ -12,22 +12,19 @@ import Canvas, { CanvasHandle } from "../Canvas";
 import Chat from "./Chat";
 import Players from "./Players";
 
-const words = ["banana", "bat", "bed"];
-
-const randomWord = () => {
-    return words[Math.floor(Math.random() * words.length)];
-};
-
 const Room: React.FC<{ socket: Socket, isHost: boolean}> = (props) => {
-    const isStarted = useAppSelector((state) => state.mode.gameStarted);
-    const [word, setWord] = useState(randomWord());
+    const [isStarted, setIsStarted] = useState(false);
+    const [words, setWords] = useState<string[]>([]);
+    const [index, setIndex] = useState(0);
     const [match, setMatch] = useState(false);
+    const [won, setWon] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
     const canvasRef = useRef<CanvasHandle>(null);
     const dispatch = useAppDispatch();
     const room = useAppSelector((state) => state.mode.room);
+    let username = localStorage.getItem("userName");
 
     useEffect(() => {
-        let username = localStorage.getItem("userName");
         while (username === "" || username === null) {
             console.log(username);
             const res = prompt("Please enter a username");
@@ -40,13 +37,38 @@ const Room: React.FC<{ socket: Socket, isHost: boolean}> = (props) => {
         }
     }, []);
 
+    useEffect(() => {
+        if (index >= 5) {
+            props.socket.emit("game over", {roomCode: room, username: username});
+        }
+    }, [index])
+
     const handleSubmit = async function () {
         const data = await getCanvasImage();
         const result = await predictImage(data);
-        setMatch(result.label === word);
-        canvasRef.current?.clear();
-        setWord(randomWord());
+        if (true) {
+            // setMatch(result.label === words[index]);
+            setMatch(true);
+            setIndex(index + 1); 
+        }
+        canvasRef.current?.clear(); 
     };
+
+    useEffect(() => {
+        props.socket.on('started', (prompts: string[]) => {
+            setIsStarted(true);
+            setWords([...words, ...prompts]);
+            console.log(`Got prompts ${JSON.stringify(prompts)}`);
+        });
+        }, [props, words, isStarted]);
+
+    useEffect(() => {
+        props.socket.on('over', (winner: string) => {
+            setGameOver(true);
+            setWon(username === winner);
+            console.log(`Game over, ${username === winner ? "won" : "lost"}`);
+        });
+        }, [props, gameOver, won]);
 
     const handleStart = () => {
         dispatch(setStarted({roomCode: room, socket: props.socket}));
@@ -58,10 +80,10 @@ const Room: React.FC<{ socket: Socket, isHost: boolean}> = (props) => {
                 <Players socket={props.socket} />
             </div>
                 <div className="col-8">
-                    {isStarted && 
+                    {isStarted && !gameOver &&
                         <div className="container">
                             <div className="row">
-                                <h3 className="center">Target: {word}</h3>
+                                <h3 className="center">Target: {words[index]} No. Completed: {index}</h3>
                             </div>
                             <div className="center row">
                                 <Canvas ref={canvasRef} />
@@ -74,25 +96,48 @@ const Room: React.FC<{ socket: Socket, isHost: boolean}> = (props) => {
                             </div>
                         </div>
                     }
-                    {!isStarted && props.isHost &&
+                    {!isStarted && props.isHost && !gameOver &&
                         <div className="container">
                             <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
                                 <Button className="button" onClick={handleStart}>
                                     Start Game
                                 </Button>
+                                <h2>Room code: {room}</h2>
                             </div>
                         </div>
                     }
-                    {!isStarted && !props.isHost &&
+                    {!isStarted && !props.isHost && !gameOver &&
                         <div className="container">
                             <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
                                 <h2>Waiting for host to start</h2>
                             </div>
                         </div>
                     }
+                    {gameOver && won &&
+                        <div className="container">
+                            <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+                                <h2>You won!!!</h2>
+                                <Link to="/">
+                                    <Button className="button">
+                                        Main Menu
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    }
+                    {gameOver && !won &&
+                        <div className="container">
+                            <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+                                <h2>You lost. Completed {index} prompts out of 5.</h2>
+                                <Link to="/">
+                                    <Button className="button">
+                                        Main Menu
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    }
                 </div>
-            
-
             <div className="col-2">
                 <Chat socket={props.socket} />
             </div>
