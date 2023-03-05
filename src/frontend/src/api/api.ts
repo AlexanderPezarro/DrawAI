@@ -7,7 +7,10 @@ const BACKEND_URL =
         : process.env.REACT_APP_BACKEND_URL;
 
 export async function predictImage(data: string) {
-    var result;
+    var result = {
+        label: "Waiting...",
+        confidence: 0,
+    };
     await axios
         .post(BACKEND_URL + "/predict", {
             data: data,
