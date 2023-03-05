@@ -1,4 +1,3 @@
-import predictImage from "../api/api";
 import html2canvas from "html2canvas";
 
 export const getCanvasImage = async function () {

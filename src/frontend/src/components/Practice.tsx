@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Canvas from "./Canvas";
 import { getCanvasImage } from "../utils/utils";
-import predictImage from "../api/api";
+import { predictImage } from "../api/api";
 
 const Practice = () => {
     const [prediction, setPrediction] = useState({

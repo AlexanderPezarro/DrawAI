@@ -6,7 +6,7 @@ const BACKEND_URL =
         ? ""
         : process.env.REACT_APP_BACKEND_URL;
 
-async function predictImage(data: string) {
+export async function predictImage(data: string) {
     var result = {
         label: "Waiting...",
         confidence: 0,
@@ -21,4 +21,9 @@ async function predictImage(data: string) {
     return result;
 }
 
-export default predictImage;
+const apiurl = "http://localhost:22435/";
+
+export const getRoomCode = () => {
+    console.log("Create room api call");
+    return axios.get<string>(apiurl + "createRoom");
+};

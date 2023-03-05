@@ -19,10 +19,8 @@ function makeRoomID() {
         // abcdefghijklmnopqrstuvwxyz
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const charactersLength = characters.length;
-        for (let index = 0; index < 5; index++) {
-            result += characters.charAt(
-                Math.floor(Math.random() * charactersLength)
-            );
+        for (let index = 0; index < 6; index++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
 
         if (!activeRooms.has(result)) {
@@ -48,9 +46,11 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Express + TypeScript Server + Nodemon");
 });
 
-app.get("/createRoom", (req: Request, res: Response) => {
-    res.send(makeRoomID());
-});
+app.get('/createRoom', (req: Request, res: Response) => {
+        const roomCode = makeRoomID();
+        res.send(roomCode);
+        console.log(`Sent room code: ${roomCode}`);
+    });
 
 app.post("/predict", (req: Request, res: Response) => {
     console.log(req.body);
@@ -80,6 +80,24 @@ io.on("connection", (socket) => {
             socket.to(data.roomCode).emit("left");
         } else {
             console.log("Invalid room code");
+        }
+    });
+
+    socket.on('message', (data: {text: string, username: string, roomCode: string, id: string, socketID: string}) => {
+        console.log(`Got message: ${JSON.stringify(data)}`);
+        if (activeRooms.has(data.roomCode)) {
+            io.to(data.roomCode).emit("message", {text: data.text, username: data.username, id: data.id});
+        } else {
+            console.log(`Invalid room code: ${JSON.stringify(data)}`);
+        }
+    });
+
+    socket.on('message', (data: {text: string, username: string, roomCode: string, id: string, socketID: string}) => {
+        console.log(`Got message: ${JSON.stringify(data)}`);
+        if (activeRooms.has(data.roomCode)) {
+            io.to(data.roomCode).emit("message", {text: data.text, username: data.username, id: data.id});
+        } else {
+            console.log(`Invalid room code: ${JSON.stringify(data)}`);
         }
     });
 
