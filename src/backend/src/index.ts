@@ -13,6 +13,23 @@ const activeRooms = new Set<String>();
 
 const server = require("http").createServer(app);
 
+const words = [
+    "banana",
+    "bat",
+    "bed",
+    "book",
+    "bowtie",
+    "brain",
+    "monkey",
+    "mushroom",
+    "skull",
+    "whale",
+];
+
+function generateRandomSequence(n: number) {
+    return words.sort(() => 0.5 - Math.random()).slice(0, n);
+}
+
 function makeRoomID() {
     while (true) {
         let result = "";
@@ -20,7 +37,9 @@ function makeRoomID() {
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const charactersLength = characters.length;
         for (let index = 0; index < 6; index++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            result += characters.charAt(
+                Math.floor(Math.random() * charactersLength)
+            );
         }
 
         if (!activeRooms.has(result)) {
@@ -46,14 +65,13 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Express + TypeScript Server + Nodemon");
 });
 
-app.get('/createRoom', (req: Request, res: Response) => {
-        const roomCode = makeRoomID();
-        res.send(roomCode);
-        console.log(`Sent room code: ${roomCode}`);
-    });
+app.get("/createRoom", (req: Request, res: Response) => {
+    const roomCode = makeRoomID();
+    res.send(roomCode);
+    console.log(`Sent room code: ${roomCode}`);
+});
 
 app.post("/predict", (req: Request, res: Response) => {
-    console.log(req.body);
     ImageDataURI.outputFile(req.body.data, "./images/image.png");
 
     res.json({
