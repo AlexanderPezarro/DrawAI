@@ -24,6 +24,7 @@ const Room: React.FC<{ socket: Socket, isHost: boolean}> = (props) => {
     const [match, setMatch] = useState(false);
     const canvasRef = useRef<CanvasHandle>(null);
     const dispatch = useAppDispatch();
+    const room = useAppSelector((state) => state.mode.room);
 
     useEffect(() => {
         let username = localStorage.getItem("userName");
@@ -43,13 +44,12 @@ const Room: React.FC<{ socket: Socket, isHost: boolean}> = (props) => {
         const data = await getCanvasImage();
         const result = await predictImage(data);
         setMatch(result.label === word);
-        console.log(match);
         canvasRef.current?.clear();
         setWord(randomWord());
     };
 
     const handleStart = () => {
-        dispatch(setStarted());
+        dispatch(setStarted({roomCode: room, socket: props.socket}));
     }
 
     return (
