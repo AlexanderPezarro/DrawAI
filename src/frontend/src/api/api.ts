@@ -22,9 +22,11 @@ export async function predictImage(data: string) {
 }
 
 export function getRoomCode(): Promise<AxiosResponse<string, any>> {
+    console.log("Getting room code");
     return axios.get<string>(BACKEND_URL + "/createRoom");
 }
 
-export function postRoomCode(roomCode: string): Promise<AxiosResponse<boolean, any>> {
-    return axios.post<boolean>(BACKEND_URL + "/checkRoom", roomCode);
+export function postRoomCode(roomCode: string): Promise<AxiosResponse<string, any>> {
+    console.log(`Checking room code: ${roomCode}`);
+    return axios.post<string>(BACKEND_URL + "/checkRoom", {roomCode: roomCode});
 }

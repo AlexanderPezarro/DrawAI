@@ -8,7 +8,6 @@ import {io, Socket} from "socket.io-client";
 import Room from "./components/room/Room";
 
 function App() {
-    const mode = "home";
     const socket = io("http://localhost:22435");
     return (
         <BrowserRouter>
@@ -17,7 +16,7 @@ function App() {
                     <Route index element={<Menu />} />
                     <Route path="practice" element={<Practice />} />
                     <Route path="create-room" element={<Room socket={socket}/>} />
-                    <Route path="join-room" element={<Room socket={socket}/>} />
+                    <Route path="join-room/:roomCode" element={<Room socket={socket}/>} />
                     <Route path="*" element={<Menu />} />
                 </Route>
             </Routes>

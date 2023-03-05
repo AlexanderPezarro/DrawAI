@@ -1,15 +1,30 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AxiosResponse } from "axios";
 import { Socket } from "socket.io-client";
 // import {io, Socket} from "socket.io-client"
-import { getRoomCode } from "../api/api";
+import { getRoomCode, postRoomCode } from "../api/api";
 // import { ClientToServerEvents, ServerToClientEvents } from "../types/types";
 
-export const createRoomCode = createAsyncThunk<string, Socket>(
+export const createRoomCode = createAsyncThunk<string, {username:string|null, socket:Socket}>(
     "createRoom/",
-    async (socket, { dispatch }) => {
+    async ({username, socket}, _) => {
       try {
         const response = await getRoomCode();
-        socket.emit("join", {username: "alex", roomCode: response.data});
+        socket.emit("join", {username: username, roomCode: response.data});
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );
+
+  export const checkRoomCode = createAsyncThunk<string, {username:string|null, roomCode:string, socket:Socket}>(
+    "checkRoom/",
+    async ({username, roomCode, socket}, { dispatch }) => {
+      try {
+        const response: AxiosResponse<string, any> = await postRoomCode(roomCode);
+        console.log(`checkRoomCode data: ${response.data}`)
+        socket.emit("join", {username: username, roomCode: response.data});
         return response.data;
       } catch (error) {
         throw error;
@@ -51,6 +66,13 @@ const modeSlice = createSlice({
             state.room = payload;
         });
         builder.addCase(createRoomCode.rejected, (state, action) => {
+            console.log(action.error);
+        });
+        builder.addCase(checkRoomCode.fulfilled, (state, { payload }) => {
+            console.log(`Checked room code ${payload}`);
+            state.room = payload;
+        });
+        builder.addCase(checkRoomCode.rejected, (state, action) => {
             console.log(action.error);
         });
     },

@@ -1,27 +1,23 @@
 import React, { Component, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Socket } from "socket.io-client";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { createRoomCode, setUsername } from "../../slices/modeSlice";
+import { checkRoomCode, createRoomCode, setUsername } from "../../slices/modeSlice";
 import Canvas from "../Canvas";
 import Chat from "./Chat";
 import Players from "./Players";
 
-const Room: React.FC<{socket: Socket, roomCode?: string}> = (props) => {
+const Room: React.FC<{socket: Socket}> = (props) => {
     const dispatch = useAppDispatch();
-    const roomCode = useAppSelector((state) => state.mode.room);
+    let username = localStorage.getItem('userName');
+    // const {roomCode} = useParams();
+    // const room = useAppSelector((state) => state.mode.room);
 
     useEffect(() => {
-        if (roomCode === undefined) {
-            dispatch(createRoomCode(props.socket));
-        }
-    }, [roomCode]);
-
-    useEffect(() => {
-        let username = localStorage.getItem('userName');
         while (username === "" ||  username === null) {
             console.log(username);
             const res = prompt("Please enter a username");
-            if (res == null || res == "") {
+            if (res === null || res === "") {
                 localStorage.setItem("userName", "");
             } else {
                 localStorage.setItem("userName", res);
@@ -29,7 +25,7 @@ const Room: React.FC<{socket: Socket, roomCode?: string}> = (props) => {
             username = localStorage.getItem('userName');
         }
     }, []);
-
+    
     return(
     <div className="d-flex min-vh-100">
         {/* Left: 0 */}
