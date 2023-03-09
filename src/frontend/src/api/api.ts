@@ -1,9 +1,8 @@
 import axios, { AxiosResponse } from "axios";
-// require("dotenv").config();
 
 const BACKEND_URL =
     process.env.REACT_APP_BACKEND_URL === undefined
-        ? ""
+        ? "http://localhost:22435"
         : process.env.REACT_APP_BACKEND_URL;
 
 export async function predictImage(data: string) {
