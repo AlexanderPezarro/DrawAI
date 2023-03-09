@@ -8,7 +8,7 @@ import { io, Socket } from "socket.io-client";
 import Room from "./components/room/Room";
 
 function App() {
-    const socket = io("http://localhost:22435");
+    const socket = io("https://ahp9.host.cs.st-andrews.ac.uk");
     return (
         <div style={{ backgroundColor: "#2a363b" }} className="pt-5 pb-5">
             <BrowserRouter>
