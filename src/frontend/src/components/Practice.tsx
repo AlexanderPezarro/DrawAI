@@ -44,7 +44,7 @@ const Practice = () => {
                         </div>
 
                         <div className="col-3"></div>
-                        <h4 className="center">
+                        <h4 className="center" style={{color: "white"}}>
                             Prediction: {prediction.label} Confidence:
                             {prediction.confidence}
                         </h4>
