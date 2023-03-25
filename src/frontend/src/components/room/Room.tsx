@@ -140,14 +140,14 @@ const Room: React.FC<{ socket: Socket; isHost: boolean }> = (props) => {
                 {!isStarted && !props.isHost && !gameOver && (
                     <div className="container">
                         <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-                            <h2>Waiting for host to start</h2>
+                            <h2 style={{ color: "white" }}>Waiting for host to start</h2>
                         </div>
                     </div>
                 )}
                 {gameOver && won && (
                     <div className="container">
                         <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-                            <h2>You won!!!</h2>
+                            <h2 style={{ color: "white" }}>You won!!!</h2>
                             <Link to="/">
                                 <Button className="button">Main Menu</Button>
                             </Link>
@@ -157,7 +157,7 @@ const Room: React.FC<{ socket: Socket; isHost: boolean }> = (props) => {
                 {gameOver && !won && (
                     <div className="container">
                         <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-                            <h2>
+                            <h2 style={{ color: "white" }}>
                                 You lost. Completed {index} prompts out of 5.
                             </h2>
                             <Link to="/">

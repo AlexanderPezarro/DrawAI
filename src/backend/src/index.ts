@@ -93,10 +93,11 @@ app.get("/createRoom", (req: Request, res: Response) => {
 });
 
 app.post("/predict", async (req: Request, res: Response) => {
-    ImageDataURI.outputFile(req.body.data, "./images/image.png");
+    const name = (Math.random() + 1).toString(36).substring(7);
+    await ImageDataURI.outputFile(req.body.data, `./images/${name}.png`);
     console.log("print here...");
     // Pass file to evaluation
-    eval_child.stdin.write("./images/image.png\n");
+    eval_child.stdin.write(`./images/${name}.png\n`);
 
     eval_fn().then((result: string) => {
         res.json(JSON.parse(result));

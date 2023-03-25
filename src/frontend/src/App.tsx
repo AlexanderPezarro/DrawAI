@@ -8,7 +8,11 @@ import { io, Socket } from "socket.io-client";
 import Room from "./components/room/Room";
 
 function App() {
-    const socket = io("http://localhost:22435");
+    const BACKEND_URL =
+    process.env.REACT_APP_BACKEND_URL === undefined
+        ? "http://localhost:22435"
+        : process.env.REACT_APP_BACKEND_URL;
+    const socket = io(BACKEND_URL);
     return (
         <div style={{ backgroundColor: "#2a363b" }} className="pt-5 pb-5">
             <BrowserRouter>
