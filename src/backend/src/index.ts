@@ -82,17 +82,17 @@ const io = new Server(server, {
     },
 });
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/api", (req: Request, res: Response) => {
     res.send("Express + TypeScript Server + Nodemon");
 });
 
-app.get("/createRoom", (req: Request, res: Response) => {
+app.get("/api/createRoom", (req: Request, res: Response) => {
     const roomCode = makeRoomID();
     res.send(roomCode);
     console.log(`Sent room code: ${roomCode}`);
 });
 
-app.post("/predict", async (req: Request, res: Response) => {
+app.post("/api/predict", async (req: Request, res: Response) => {
     const name = (Math.random() + 1).toString(36).substring(7);
     await ImageDataURI.outputFile(req.body.data, `./images/${name}.png`);
     console.log("print here...");
@@ -104,7 +104,7 @@ app.post("/predict", async (req: Request, res: Response) => {
     });
 });
 
-app.post("/checkRoom", (req: Request, res: Response) => {
+app.post("/api/checkRoom", (req: Request, res: Response) => {
     console.log(`Checking room ${JSON.stringify(req.body.roomCode)}`);
     if (activeRooms.has(req.body.roomCode)) res.send(req.body.roomCode).end();
     res.status(401).send();
