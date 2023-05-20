@@ -20,7 +20,7 @@ async function eval_fn() {
         then(onFulfill: (arg0: string) => void, onReject: any) {
             eval_child.stderr.on("data", (data: string) => {
                 console.log(`stderr: ${data}`);
-                // onFulfill(data);
+                // onReject(data);
             });
             eval_child.stdout.on("data", (data: string) => {
                 // console.log(`stdout: ${data}`);
@@ -101,6 +101,9 @@ app.post("/api/predict", async (req: Request, res: Response) => {
 
     eval_fn().then((result: string) => {
         res.json(JSON.parse(result));
+    }).catch((err: string) => {
+        console.log(err);
+        res.status(500).end();
     });
 });
 
