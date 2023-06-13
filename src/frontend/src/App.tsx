@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { Menu } from "./components/Menu";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -8,11 +8,22 @@ import { io, Socket } from "socket.io-client";
 import Room from "./components/room/Room";
 
 function App() {
-    const BACKEND_URL =
-    process.env.REACT_APP_BACKEND_URL === undefined
-        ? "http://localhost:22435"
-        : process.env.REACT_APP_BACKEND_URL;
-    const socket = io(BACKEND_URL);
+    const BACKEND_URL = process.env.REACT_APP_SOCKET_URL ?? "http://localhost:22435";
+    const [socket, setSocket] = useState<Socket>(io());
+
+    useEffect(() => {
+        setSocket(io(BACKEND_URL));
+        console.log("Created socket");
+    }, [])
+
+    useEffect(() => {
+        socket.on("connected", () => {
+            console.log("Socket connected");
+            console.log(socket.id);
+        })
+        console.log(`Created socket-connected listener for socket ID-${socket.id}`);
+    }, [socket])
+
     return (
         <div style={{ backgroundColor: "#2a363b" }} className="pt-5 pb-5">
             <BrowserRouter>

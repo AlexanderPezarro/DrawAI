@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { Server } from "socket.io";
@@ -31,8 +31,6 @@ async function eval_fn() {
 }
 
 const activeRooms = new Set<String>();
-
-const server = require("http").createServer(app);
 
 const words = [
     "banana",
@@ -76,10 +74,17 @@ app.use(
     express.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 })
 );
 
+const server = require("http").createServer(app);
+
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:3000",
     },
+});
+
+app.get("*", (req: Request, res: Response, next: NextFunction) => {
+    console.log(`URL: ${req.url}`);
+    next();
 });
 
 app.get("/api", (req: Request, res: Response) => {
