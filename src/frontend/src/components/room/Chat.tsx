@@ -6,13 +6,11 @@ import { checkRoomCode, createRoomCode } from "../../slices/modeSlice";
 import { MessageResponse } from "../../types/types";
 
 const Chat: React.FC<{ socket: Socket }> = (props) => {
-    const [messages, setMessages] = useState<MessageResponse[]>([
-        { username: "alex", text: "Welcome to the game", id: "1" },
-    ]);
+    const [messages, setMessages] = useState<MessageResponse[]>([]);
     const [message, setMessage] = useState("");
     const dispatch = useAppDispatch();
-    const { roomCode } = useParams();
-    const room = useAppSelector((state) => state.mode.room);
+    const { roomCode: roomCodeParam } = useParams();
+    const roomCodeState = useAppSelector((state) => state.mode.room);
     const username = localStorage.getItem("userName");
 
     const handleSendMessage = (key: KeyboardEvent) => {
@@ -20,7 +18,7 @@ const Chat: React.FC<{ socket: Socket }> = (props) => {
             props.socket.emit("message", {
                 text: message,
                 username: username,
-                roomCode: room,
+                roomCode: roomCodeState,
                 id: `${props.socket.id}${Math.random()}`,
                 socketID: props.socket.id,
             });
@@ -38,28 +36,36 @@ const Chat: React.FC<{ socket: Socket }> = (props) => {
     });
 
     useEffect(() => {
-        props.socket.on("message", (data: MessageResponse) => {
+        const onMessage =(data: MessageResponse) => {
             setMessages([...messages, data]);
             console.log(`Got message ${JSON.stringify(data)}`);
-        });
+        }
+
+        props.socket.on("message", onMessage);
+
+        return () => {
+            props.socket.off("message", onMessage);
+        }
     }, [props, messages]);
 
     useEffect(() => {
-        console.log(`P: ${roomCode} S: ${room}`);
-        if (roomCode === undefined && room === "") {
+        console.log(`RoomCodeParam: ${roomCodeParam} RoomCodeState: ${roomCodeState}`);
+        if (roomCodeParam === undefined && roomCodeState === "") {
+            console.log("No roomCode, creating new room");
             dispatch(
                 createRoomCode({ username: username, socket: props.socket })
             );
-        } else if (roomCode !== undefined) {
+        } else if (roomCodeParam !== undefined && roomCodeState === "") {
+            console.log("roomCode given, checking validity");
             dispatch(
                 checkRoomCode({
                     username: username,
-                    roomCode: roomCode,
+                    roomCode: roomCodeParam,
                     socket: props.socket,
                 })
             );
         }
-    }, [room, roomCode]);
+    }, [roomCodeState, roomCodeParam]);
 
     return (
         <div className="d-flex flex-column mb-5">
