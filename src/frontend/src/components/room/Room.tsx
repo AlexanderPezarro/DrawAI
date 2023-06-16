@@ -22,20 +22,20 @@ const Room: React.FC<{ socket: Socket; isHost: boolean }> = (props) => {
     const canvasRef = useRef<CanvasHandle>(null);
     const dispatch = useAppDispatch();
     const room = useAppSelector((state) => state.mode.room);
-    let username = localStorage.getItem("userName");
+    const [username, setUsername] = useState(localStorage.getItem("userName"));
 
     useEffect(() => {
-        while (username === "" || username === null) {
-            console.log(username);
+        if (username === "" || username === null) {
+            console.log(`Username: ${username}`);
             const res = prompt("Please enter a username");
             if (res === null || res === "") {
                 localStorage.setItem("userName", "");
             } else {
                 localStorage.setItem("userName", res);
             }
-            username = localStorage.getItem("userName");
+            setUsername(localStorage.getItem("userName"));
         }
-    }, []);
+    }, [username]);
 
     useEffect(() => {
         if (index >= 5) {

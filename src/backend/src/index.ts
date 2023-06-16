@@ -106,16 +106,16 @@ app.post("/api/predict", async (req: Request, res: Response) => {
 
 app.post("/api/checkRoom", (req: Request, res: Response) => {
     console.log(`Checking room ${JSON.stringify(req.body.roomCode)}`);
-    if (activeRooms.has(req.body.roomCode)) res.send(req.body.roomCode).end();
+    if ((req.body.roomCode) in activeRooms) res.send(req.body.roomCode).end();
     res.status(401).send();
 });
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
     console.log(`Id-${socket.id} connected!`);
 
     socket.on("join", (data: { username: string; roomCode: string }) => {
-        if (activeRooms.has(data.roomCode)) {
-            console.log(`${data.username} has join room ${data.roomCode}`);
+        if (data.roomCode in activeRooms) {
+            console.log(`${data.username} joined room ${data.roomCode}`);
             socket.join(data.roomCode);
             io.to(data.roomCode).emit("joined", data.username);
 
@@ -127,7 +127,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("leave", (data: { username: string; roomCode: string }) => {
-        if (activeRooms.has(data.roomCode)) {
+        if (data.roomCode in activeRooms) {
             socket.leave(data.roomCode);
             socket.to(data.roomCode).emit("left");
 
@@ -152,7 +152,7 @@ io.on("connection", (socket) => {
             socketID: string;
         }) => {
             console.log(`Got message: ${JSON.stringify(data)}`);
-            if (activeRooms.has(data.roomCode)) {
+            if (data.roomCode in activeRooms) {
                 io.to(data.roomCode).emit("message", {
                     text: data.text,
                     username: data.username,
@@ -166,7 +166,7 @@ io.on("connection", (socket) => {
 
     socket.on("start", (roomCode: string) => {
         console.log(`Room starting: ${roomCode}`);
-        if (activeRooms.has(roomCode)) {
+        if (roomCode in activeRooms) {
             io.to(roomCode).emit("started", generateRandomSequence(5));
         } else {
             console.log(
@@ -177,7 +177,7 @@ io.on("connection", (socket) => {
 
     socket.on("game over", (data: { roomCode: string; username: string }) => {
         console.log(`Game over: ${data.roomCode}`);
-        if (activeRooms.has(data.roomCode)) {
+        if (data.roomCode in activeRooms) {
             io.to(data.roomCode).emit("over", data.username);
         } else {
             console.log(
