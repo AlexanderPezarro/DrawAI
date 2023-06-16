@@ -36,10 +36,16 @@ const Chat: React.FC<{ socket: Socket }> = (props) => {
     });
 
     useEffect(() => {
-        props.socket.on("message", (data: MessageResponse) => {
+        const onMessage =(data: MessageResponse) => {
             setMessages([...messages, data]);
             console.log(`Got message ${JSON.stringify(data)}`);
-        });
+        }
+
+        props.socket.on("message", onMessage);
+
+        return () => {
+            props.socket.off("message", onMessage);
+        }
     }, [props, messages]);
 
     useEffect(() => {
