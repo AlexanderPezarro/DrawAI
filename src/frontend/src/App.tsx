@@ -4,25 +4,12 @@ import { Menu } from "./components/Menu";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Practice from "./components/Practice";
 
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 import Room from "./components/room/Room";
 
 function App() {
-    const BACKEND_URL = process.env.REACT_APP_SOCKET_URL ?? "http://localhost:22435";
-    const [socket, setSocket] = useState<Socket>(io());
-
-    useEffect(() => {
-        setSocket(io(BACKEND_URL));
-        console.log("Created socket");
-    }, [])
-
-    useEffect(() => {
-        socket.on("connected", () => {
-            console.log("Socket connected");
-            console.log(socket.id);
-        })
-        console.log(`Created socket-connected listener for socket ID-${socket.id}`);
-    }, [socket])
+    const SOCKET_URL = process.env.REACT_APP_SOCKET_URL ?? "http://localhost:22435";
+    const socket = io(SOCKET_URL);
 
     return (
         <div style={{ backgroundColor: "#2a363b" }} className="pt-5 pb-5">
