@@ -2,28 +2,26 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { Server } from "socket.io";
-const ImageDataURI = require("image-data-uri");
-const spawn = require("child_process").spawn;
-const fs = require("fs");
+// @ts-ignore
+import ImageDataURI from "image-data-uri";
+import {spawn} from "child_process";
 
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT;
+const port: number = Number(process.env['PORT']);
 
 // Set up the evaluation
 const eval_child = spawn("python3", ["evaluate.py"]);
-eval_child.stdin.setEncoding("utf-8");
+eval_child.stdin.setDefaultEncoding("utf-8");
 
 async function eval_fn() {
     return Promise.resolve({
-        then(onFulfill: (arg0: string) => void, onReject: any) {
+        then(onFulfill: (arg0: string) => void) {
             eval_child.stderr.on("data", (data: string) => {
                 console.log(`stderr: ${data}`);
-                // onReject(data);
             });
             eval_child.stdout.on("data", (data: string) => {
-                // console.log(`stdout: ${data}`);
                 onFulfill(data);
             });
         },
@@ -54,7 +52,6 @@ function generateRandomSequence(n: number) {
 function makeRoomID() {
     while (true) {
         let result = "";
-        // abcdefghijklmnopqrstuvwxyz
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const charactersLength = characters.length;
         for (let index = 0; index < 6; index++) {
@@ -82,11 +79,11 @@ const io = new Server(server, {
     },
 });
 
-app.get("/api", (req: Request, res: Response) => {
+app.get("/api", (_: Request, res: Response) => {
     res.send("Express + TypeScript Server + Nodemon");
 });
 
-app.get("/api/createRoom", (req: Request, res: Response) => {
+app.get("/api/createRoom", (_: Request, res: Response) => {
     const roomCode = makeRoomID();
     res.send(roomCode);
     console.log(`Sent room code: ${roomCode}`);
