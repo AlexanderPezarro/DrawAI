@@ -13,7 +13,7 @@ const app: Express = express();
 const port = process.env.PORT;
 
 // Set up the evaluation
-const eval_child = spawn("python", ["evaluate.py"]);
+const eval_child = spawn("python3", ["evaluate.py"]);
 eval_child.stdin.setEncoding("utf-8");
 
 async function eval_fn() {
