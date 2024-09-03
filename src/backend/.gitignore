@@ -1,3 +1,5 @@
+venv/
+models/
 data/
 *.pyc
 .env
