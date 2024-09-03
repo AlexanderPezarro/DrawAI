@@ -1,12 +1,13 @@
 {
-    "name": "DrawAI",
+    "name": "draw_ai",
     "version": "1.0.0",
     "description": "Backend for DrawAI",
     "author": "DrawAI",
     "main": "index.ts",
     "scripts": {
         "start": "ts-node src/index.ts",
-        "watch": "nodemon --watch src --exec \"npm start\" --ext ts"
+        "watch": "nodemon --watch src --exec \"npm start\" --ext ts",
+        "build": "tsc -p ./tsconfig.json"
     },
     "dependencies": {
         "cors": "^2.8.5",
