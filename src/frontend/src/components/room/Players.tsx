@@ -2,15 +2,18 @@ import React, { Component, useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 
 const Players: React.FC<{ socket: Socket }> = (props) => {
-    const [players, setPlayers] = useState<string[]>(["alex"]);
+    const [players, setPlayers] = useState<string[]>([]);
+    function onJoined(usernames: string[]) {
+        setPlayers(usernames);
+        console.log(`Player ${usernames.at(-1)} joined`);
+    }
 
     useEffect(() => {
-        props.socket.on("joined", (username: string) => {
-            console.log(`${JSON.stringify(username)} joined`);
-            setPlayers([...players, username]);
-            console.log(`Player ${username} joined`);
-        });
-    }, [props, players]);
+        props.socket.on("joined", onJoined);
+        return () => {
+            props.socket.off("joined", onJoined);
+        }
+    }, [props]);
 
     return (
         <div className="d-flex flex-column mb-5">
