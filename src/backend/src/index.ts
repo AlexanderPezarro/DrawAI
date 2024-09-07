@@ -28,7 +28,7 @@ async function eval_fn() {
     });
 }
 
-const activeRooms = new Set<String>();
+const activeRooms: Map<String, Set<String>> = new Map<String, Set<String>>();
 
 const server = require("http").createServer(app);
 
@@ -61,7 +61,7 @@ function makeRoomID() {
         }
 
         if (!activeRooms.has(result)) {
-            activeRooms.add(result);
+            activeRooms.set(result, new Set());
             return result;
         }
     }
@@ -118,6 +118,9 @@ io.on("connection", (socket) => {
             console.log(`${data.username} has join room ${data.roomCode}`);
             socket.join(data.roomCode);
             io.to(data.roomCode).emit("joined", data.username);
+
+            // Add this player to the room
+            activeRooms.get(data.roomCode)!.add(data.username);
         } else {
             console.log("Invalid room code");
         }
@@ -127,6 +130,13 @@ io.on("connection", (socket) => {
         if (activeRooms.has(data.roomCode)) {
             socket.leave(data.roomCode);
             socket.to(data.roomCode).emit("left");
+
+            // Remove this player from the room
+            activeRooms.get(data.roomCode)!.delete(data.username);
+            // If the room is empty, delete it
+            if (activeRooms.get(data.roomCode)!.size === 0) {
+                activeRooms.delete(data.roomCode);
+            }
         } else {
             console.log("Invalid room code");
         }
